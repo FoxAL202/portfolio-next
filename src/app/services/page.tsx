@@ -1,5 +1,11 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { services } from "@/data/services";
+
+export const metadata: Metadata = {
+  title: "Услуги | Александр",
+  description: "Разработка сайтов, лендингов и Telegram ботов под ключ. Современный дизайн, чистый код, продуманный UX.",
+};
 
 export default function ServicesPage() {
   return (

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 const texts = [
   "Веб-разработчик",
@@ -14,42 +14,60 @@ export default function Hero() {
   const [textIndex, setTextIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [pause, setPause] = useState(false);
+  const mountedRef = useRef(true);
 
   useEffect(() => {
+    return () => { mountedRef.current = false; };
+  }, []);
+
+  useEffect(() => {
+    if (pause) return;
+
     const currentText = texts[textIndex];
     let timeout: ReturnType<typeof setTimeout>;
 
     if (isDeleting) {
       if (charIndex > 0) {
         timeout = setTimeout(() => {
+          if (!mountedRef.current) return;
           setDisplayText(currentText.substring(0, charIndex - 1));
           setCharIndex((c) => c - 1);
         }, 40);
       } else {
-        setIsDeleting(false);
-        setTextIndex((i) => (i + 1) % texts.length);
-        timeout = setTimeout(() => {}, 500);
+        setPause(true);
+        timeout = setTimeout(() => {
+          if (!mountedRef.current) return;
+          setIsDeleting(false);
+          setTextIndex((i) => (i + 1) % texts.length);
+          setPause(false);
+        }, 800);
       }
     } else {
       if (charIndex < currentText.length) {
         timeout = setTimeout(() => {
+          if (!mountedRef.current) return;
           setDisplayText(currentText.substring(0, charIndex + 1));
           setCharIndex((c) => c + 1);
         }, 80);
       } else {
-        timeout = setTimeout(() => setIsDeleting(true), 2000);
+        setPause(true);
+        timeout = setTimeout(() => {
+          if (!mountedRef.current) return;
+          setIsDeleting(true);
+          setPause(false);
+        }, 2000);
       }
     }
 
     return () => clearTimeout(timeout);
-  }, [charIndex, isDeleting, textIndex]);
+  }, [charIndex, isDeleting, textIndex, pause]);
 
   return (
     <section
       id="hero"
       className="min-h-screen flex items-center relative overflow-hidden"
     >
-      {/* Orbs */}
       <div
         className="absolute pointer-events-none w-[800px] h-[800px] -top-[300px] -right-[200px]"
         style={{
@@ -63,7 +81,6 @@ export default function Hero() {
         }}
       />
 
-      {/* Particles */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {Array.from({ length: 30 }).map((_, i) => (
           <div

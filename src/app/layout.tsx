@@ -22,7 +22,7 @@ export const metadata: Metadata = {
     title: "Александр | Разработчик сайтов",
     description:
       "Портфолио веб-разработчика. Создание сайтов, лендингов и Telegram ботов.",
-    url: "https://foxal202.github.io/portfolio/",
+    url: "https://foxal202.github.io/portfolio-next/",
     locale: "ru_RU",
     type: "website",
   },
@@ -32,10 +32,7 @@ export const metadata: Metadata = {
     description:
       "Портфолио веб-разработчика. Создание сайтов, лендингов и Telegram ботов.",
   },
-  icons: {
-    icon: "/portfolio/favicon.svg",
-  },
-  metadataBase: new URL("https://foxal202.github.io/portfolio/"),
+  metadataBase: new URL("https://foxal202.github.io/portfolio-next/"),
 };
 
 export default function RootLayout({

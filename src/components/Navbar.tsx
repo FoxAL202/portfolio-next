@@ -2,39 +2,57 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const links = [
-  { href: "#hero", label: "Главная" },
-  { href: "#about", label: "Обо мне" },
-  { href: "#skills", label: "Навыки" },
-  { href: "#projects", label: "Проекты" },
-  { href: "/services", label: "Услуги" },
-  { href: "#contacts", label: "Контакты" },
+  { href: "#hero", label: "Главная", type: "anchor" as const },
+  { href: "#about", label: "Обо мне", type: "anchor" as const },
+  { href: "#skills", label: "Навыки", type: "anchor" as const },
+  { href: "#projects", label: "Проекты", type: "anchor" as const },
+  { href: "/services", label: "Услуги", type: "page" as const },
+  { href: "#contacts", label: "Контакты", type: "anchor" as const },
 ];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState("");
+  const pathname = usePathname();
+  const isHome = pathname === "/";
 
   useEffect(() => {
+    if (!isHome) return;
+
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
 
-      const sections = document.querySelectorAll("section[id]");
+      const sections = document.querySelectorAll<HTMLElement>("section[id]");
       let current = "";
       sections.forEach((section) => {
-        const top = (section as HTMLElement).offsetTop - 120;
+        const top = section.offsetTop - 120;
         if (window.scrollY >= top) {
-          current = section.getAttribute("id") || "";
+          current = section.id;
         }
       });
       setActive(current);
     };
 
     window.addEventListener("scroll", handleScroll);
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
+  }, [isHome]);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
   }, []);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <nav
@@ -56,6 +74,7 @@ export default function Navbar() {
           className="md:hidden flex flex-col gap-[6px] p-1"
           onClick={() => setOpen(!open)}
           aria-label="Меню"
+          aria-expanded={open}
         >
           <span
             className={`w-6 h-[2px] bg-[#e0e0e0] transition-all duration-300 ${
@@ -81,9 +100,9 @@ export default function Navbar() {
         >
           {links.map((link) => (
             <li key={link.href}>
-              {link.href.startsWith("#") ? (
+              {link.type === "anchor" ? (
                 <a
-                  href={link.href}
+                  href={isHome ? link.href : `/${link.href}`}
                   className={`block py-4 md:py-0 text-sm font-medium transition-colors relative ${
                     active === link.href.slice(1)
                       ? "text-white"
@@ -101,10 +120,19 @@ export default function Navbar() {
               ) : (
                 <Link
                   href={link.href}
-                  className="block py-4 md:py-0 text-sm font-medium text-[#a0a0a0] hover:text-white transition-colors"
+                  className={`block py-4 md:py-0 text-sm font-medium transition-colors relative ${
+                    pathname === link.href
+                      ? "text-white"
+                      : "text-[#a0a0a0] hover:text-white"
+                  }`}
                   onClick={() => setOpen(false)}
                 >
                   {link.label}
+                  <span
+                    className={`absolute -bottom-1 left-0 h-[2px] bg-gradient-to-r from-[#a855f7] to-[#6366f1] transition-all duration-300 ${
+                      pathname === link.href ? "w-full" : "w-0"
+                    }`}
+                  />
                 </Link>
               )}
             </li>

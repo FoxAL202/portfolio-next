@@ -10,6 +10,7 @@ const stats = [
 
 export default function About() {
   const [counts, setCounts] = useState(stats.map(() => 0));
+  const [imgError, setImgError] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
 
@@ -18,30 +19,31 @@ export default function About() {
       ([entry]) => {
         if (entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
-          stats.forEach((stat, i) => {
-            const increment = Math.ceil(stat.target / 60);
-            let current = 0;
-            const timer = setInterval(() => {
-              current += increment;
-              if (current >= stat.target) {
-                setCounts((prev) => {
-                  const next = [...prev];
-                  next[i] = stat.target;
-                  return next;
-                });
-                clearInterval(timer);
-              } else {
-                setCounts((prev) => {
-                  const next = [...prev];
-                  next[i] = current;
-                  return next;
-                });
-              }
-            }, 30);
-          });
+
+          const durations = [1500, 1200, 800];
+          const startTime = performance.now();
+
+          const animate = (now: number) => {
+            const elapsed = now - startTime;
+            let done = true;
+
+            setCounts(() =>
+              stats.map((stat, i) => {
+                const progress = Math.min(elapsed / durations[i], 1);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const value = Math.round(eased * stat.target);
+                if (value < stat.target) done = false;
+                return value;
+              })
+            );
+
+            if (!done) requestAnimationFrame(animate);
+          };
+
+          requestAnimationFrame(animate);
         }
       },
-      { threshold: 0.5 }
+      { threshold: 0.3 }
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -60,14 +62,19 @@ export default function About() {
           {/* Photo */}
           <div className="flex justify-center">
             <div className="w-[200px] h-[200px] rounded-full overflow-hidden border-3 border-[#a855f7]/30 shadow-[0_0_40px_rgba(168,85,247,0.1)] flex-shrink-0">
-              <img
-                src="/portfolio-next/assets/photo.jpg"
-                alt="Александр"
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
+              {imgError ? (
+                <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#a855f7]/20 to-[#6366f1]/10 text-4xl font-extrabold text-[#a855f7]">
+                  А
+                </div>
+              ) : (
+                <img
+                  src="/portfolio-next/assets/photo.jpg"
+                  alt="Александр"
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                  onError={() => setImgError(true)}
+                />
+              )}
             </div>
           </div>
 

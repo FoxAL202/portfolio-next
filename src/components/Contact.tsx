@@ -5,9 +5,15 @@ import { useState } from "react";
 export default function Contact() {
   const [charCount, setCharCount] = useState(0);
   const [sent, setSent] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (loading) return;
+
+    setLoading(true);
+    setError(false);
     const form = e.currentTarget;
     const formData = new FormData(form);
 
@@ -15,13 +21,21 @@ export default function Contact() {
       method: "POST",
       body: formData,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Network error");
+        return res.json();
+      })
       .then(() => {
         setSent(true);
         form.reset();
         setCharCount(0);
         setTimeout(() => setSent(false), 5000);
-      });
+      })
+      .catch(() => {
+        setError(true);
+        setTimeout(() => setError(false), 5000);
+      })
+      .finally(() => setLoading(false));
   };
 
   return (
@@ -97,14 +111,38 @@ export default function Contact() {
 
             <button
               type="submit"
-              className="self-start inline-flex items-center gap-2 px-7 py-[14px] rounded-xl text-[15px] font-semibold text-white bg-gradient-to-r from-[#a855f7] to-[#6366f1] hover:translate-y-[-2px] hover:shadow-[0_12px_32px_rgba(168,85,247,0.35)] transition-all duration-250"
+              disabled={loading || sent}
+              className={`self-start inline-flex items-center gap-2 px-7 py-[14px] rounded-xl text-[15px] font-semibold text-white bg-gradient-to-r from-[#a855f7] to-[#6366f1] transition-all duration-250 ${
+                loading
+                  ? "opacity-70 cursor-not-allowed"
+                  : sent
+                    ? "opacity-80"
+                    : "hover:translate-y-[-2px] hover:shadow-[0_12px_32px_rgba(168,85,247,0.35)]"
+              }`}
             >
-              {sent ? "✓ Отправлено!" : "Отправить"}
+              {loading ? (
+                <span className="inline-flex items-center gap-2">
+                  <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" className="opacity-25" />
+                    <path d="M4 12a8 8 0 018-8" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="opacity-75" />
+                  </svg>
+                  Отправка...
+                </span>
+              ) : sent ? (
+                "✓ Отправлено!"
+              ) : (
+                "Отправить"
+              )}
             </button>
 
             {sent && (
-              <p className="text-sm text-green-400 animate-[fade-in-up_0.5s_ease]">
+              <p className="text-sm text-green-400 animate-[fade-in-up_0.3s_ease]">
                 Сообщение отправлено! Я отвечу в ближайшее время.
+              </p>
+            )}
+            {error && (
+              <p className="text-sm text-red-400 animate-[fade-in-up_0.3s_ease]">
+                Ошибка отправки. Попробуйте позже или напишите в Telegram.
               </p>
             )}
           </form>

@@ -1,9 +1,20 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { projects } from "@/data/projects";
 
 export function generateStaticParams() {
   return projects.map((project) => ({ slug: project.slug }));
+}
+
+export async function generateMetadata(props: PageProps<"/projects/[slug]">): Promise<Metadata> {
+  const { slug } = await props.params;
+  const project = projects.find((p) => p.slug === slug);
+  if (!project) return {};
+  return {
+    title: `${project.title} | Александр`,
+    description: project.longDescription.slice(0, 160),
+  };
 }
 
 export default async function ProjectPage(props: PageProps<"/projects/[slug]">) {
