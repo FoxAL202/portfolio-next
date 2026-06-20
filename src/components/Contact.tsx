@@ -136,12 +136,12 @@ export default function Contact() {
             </button>
 
             {sent && (
-              <p className="text-sm text-green-400 animate-[fade-in-up_0.3s_ease]">
+              <p className="text-sm text-green-400 animate-fade-in-up-fast">
                 Сообщение отправлено! Я отвечу в ближайшее время.
               </p>
             )}
             {error && (
-              <p className="text-sm text-red-400 animate-[fade-in-up_0.3s_ease]">
+              <p className="text-sm text-red-400 animate-fade-in-up-fast">
                 Ошибка отправки. Попробуйте позже или напишите в Telegram.
               </p>
             )}

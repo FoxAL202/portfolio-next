@@ -9,6 +9,14 @@ const texts = [
   "Делаю Telegram ботов",
 ];
 
+const PARTICLES = Array.from({ length: 30 }, (_, i) => ({
+  x: ((i * 37 + 13) % 100),
+  size: ((i * 7 + 3) % 4) + 2,
+  duration: ((i * 11 + 10) % 15) + 10,
+  delay: ((i * 19) % 100) / 10,
+  opacity: ((i * 5) % 50) / 100 + 0.2,
+}));
+
 export default function Hero() {
   const [displayText, setDisplayText] = useState("");
   const [textIndex, setTextIndex] = useState(0);
@@ -66,7 +74,7 @@ export default function Hero() {
   return (
     <section
       id="hero"
-      className="min-h-screen flex items-center relative overflow-hidden"
+      className="min-h-screen flex items-center relative overflow-hidden pt-16"
     >
       <div
         className="absolute pointer-events-none w-[800px] h-[800px] -top-[300px] -right-[200px]"
@@ -81,18 +89,18 @@ export default function Hero() {
         }}
       />
 
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {Array.from({ length: 30 }).map((_, i) => (
+      <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+        {PARTICLES.map((p, i) => (
           <div
             key={i}
-            className="absolute w-[3px] h-[3px] bg-[#a855f7]/30 rounded-full"
+            className="absolute rounded-full bg-[#a855f7]/30"
             style={{
-              left: `${Math.random() * 100}%`,
-              width: `${Math.random() * 4 + 2}px`,
-              height: `${Math.random() * 4 + 2}px`,
-              animation: `float ${Math.random() * 15 + 10}s linear infinite`,
-              animationDelay: `${Math.random() * 10}s`,
-              opacity: Math.random() * 0.5 + 0.2,
+              left: `${p.x}%`,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              animation: `float ${p.duration}s linear infinite`,
+              animationDelay: `${p.delay}s`,
+              opacity: p.opacity,
             }}
           />
         ))}
@@ -100,13 +108,13 @@ export default function Hero() {
 
       <div className="max-w-[1100px] mx-auto px-6 relative z-[2] w-full">
         <div className="max-w-[720px]">
-          <div className="inline-flex items-center gap-[6px] px-4 py-[6px] border border-[#a855f7]/30 rounded-full text-sm font-medium text-[#a855f7] mb-5 animate-[pulse-glow_2s_ease-in-out_infinite]">
+            <div className="inline-flex items-center gap-[6px] px-4 py-[6px] border border-[#a855f7]/30 rounded-full text-sm font-medium text-[#a855f7] mb-5 animate-pulse-glow-fast">
             <span className="w-[6px] h-[6px] rounded-full bg-green-400 animate-pulse" />
             Доступен для проектов
           </div>
 
           <h1 className="text-[40px] sm:text-[64px] font-extrabold text-white leading-[1.1] mb-3">
-            <span className="gradient-text animate-[gradient-shift_4s_ease-in-out_infinite]">
+            <span className="gradient-text animate-gradient-shift">
               Александр
             </span>
           </h1>
@@ -185,11 +193,11 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-[fade-in-up_1.2s_cubic-bezier(0.22,1,0.36,1)_1s_both]">
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 animate-fade-in-up-delayed">
         <span className="text-[11px] uppercase tracking-[2px] text-[#555] animate-pulse">
           Листай
         </span>
-        <div className="w-6 h-[38px] border-2 border-[#a855f7]/25 rounded-full flex justify-center pt-2 animate-[pulse-glow_2.5s_ease-in-out_infinite]">
+        <div className="w-6 h-[38px] border-2 border-[#a855f7]/25 rounded-full flex justify-center pt-2 animate-pulse-glow">
           <div className="w-[3px] h-2 bg-gradient-to-b from-[#a855f7] to-[#6366f1] rounded-full animate-bounce" />
         </div>
       </div>
