@@ -61,7 +61,7 @@ export default function About() {
           <div className="flex justify-center">
             <div className="w-[200px] h-[200px] rounded-full overflow-hidden border-3 border-[#a855f7]/30 shadow-[0_0_40px_rgba(168,85,247,0.1)] flex-shrink-0">
               <img
-                src="/portfolio/assets/photo.jpg"
+                src="/portfolio-next/assets/photo.jpg"
                 alt="Александр"
                 className="w-full h-full object-cover"
                 onError={(e) => {
